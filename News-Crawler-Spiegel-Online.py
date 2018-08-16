@@ -55,17 +55,20 @@ class ArticleFetcher():
                     else:
                         comments = "Comments: NO"
 
-                    # Creator & Author
+                    # Creator
                     authorScript = articlePage.find("script", {"type": "application/ld+json"}).text
                     authorJsonScript = json.loads(authorScript)
                     creator = authorJsonScript.get("creator")
                     creator = ', '.join(str(y) for y in creator)
 
+                    # Author with full name
                     authorJsonScript.get("author")
                     authorList = authorJsonScript.get("author")[0]
                     authorName = authorList.get("name")
-                    if authorName == "SPIEGEL ONLINE":
-                        authorBlock = articlePage.find("div", {"id": "js-article-column"})
+                    # Author(block) with abbreviation
+                    authorBlock = articlePage.find("div", {"id": "js-article-column"})
+                    # If author is just abbreviated, author is shown in the second <i> tag of authorBlock
+                    if (authorName == "SPIEGEL ONLINE" and len(authorBlock.select("i")) > 1): 
                         authorTag = authorBlock.select("i")[1]
                         author = authorTag.text
                         author = author + " (abbreviation)"
